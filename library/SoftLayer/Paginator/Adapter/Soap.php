@@ -56,6 +56,14 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
         if ($this->_itemCache[$offset.'/'.$itemCountPerPage] == null) {
             $this->_soapClient->setResultLimitHeader($itemCountPerPage, $offset);
 
+            if ($this->_objectMask != null) {
+                $this->_soapClient->setObjectMask($this->_objectMask);
+            }
+
+            if ($this->_objectFilter != null) {
+                $this->_soapClient->setObjectFilter($this->_objectFilter);
+            }
+
             $this->_itemCache[$offset.'/'.$itemCountPerPage] = $this->_soapClient->{$this->_soapMethod}();
 
             $this->_count = $this->_soapClient->getOutputHeader('totalItems');

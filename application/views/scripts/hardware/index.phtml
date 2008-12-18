@@ -1,9 +1,25 @@
 <?php if (count($this->paginator)): ?>
-    <ul>
-        <?php foreach ($this->paginator as $item): ?>
-          <li><?= $item->hostname; ?>.<?= $item->domain?></li>
-        <?php endforeach; ?>
-    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Hostname</th>
+                <th>Public IP Address</th>
+                <th>Backend IP Address</th>
+                <th>Datacenter</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <?php foreach ($this->paginator as $item): ?>
+                <tr>
+                    <td><?= $item->hostname; ?>.<?= $item->domain?></td>
+                    <td><?= $item->primaryIpAddress; ?></td>
+                    <td><?= $item->primaryBackendIpAddress; ?></td>
+                    <td><?= $item->datacenter->longName ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 <?php endif; ?>
 
 <?= $this->paginationControl($this->paginator,
