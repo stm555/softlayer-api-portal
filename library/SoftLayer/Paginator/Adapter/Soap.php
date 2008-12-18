@@ -12,17 +12,18 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
     protected $_objectMask = null;
     protected $_objectFilter = null;
     protected $_itemCache = array();
-    
+    protected $_paginator = null;
+
     /**
      * Item count
      *
-     * @var integer
+     * @var array
      */
-    protected $_count = null;
+    protected $_count = array();
 
     /**
      * Constructor.
-     * 
+     *
      * @param  SoftLayer_Soap_Client $soapClient Soap client to execute on
      * @param string $soapMethod Soap method to execute
      * @throws Zend_Paginator_Exception
@@ -34,7 +35,7 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
              * @see Zend_Paginator_Exception
              */
             require_once 'Zend/Paginator/Exception.php';
-            
+
             throw new Zend_Paginator_Exception('SoapClient must be provided');
         }
 
@@ -66,7 +67,7 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
 
             $this->_itemCache[$offset.'/'.$itemCountPerPage] = $this->_soapClient->{$this->_soapMethod}();
 
-            $this->_count = $this->_soapClient->getOutputHeader('totalItems');
+            $this->_count[$this->_paginator->getCurrentPageNumber()] = $this->_soapClient->getOutputHeader('totalItems');
         }
 
         return $this->_itemCache[$offset.'/'.$itemCountPerPage];
@@ -79,9 +80,20 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
      */
     public function count()
     {
-        // fetch items so we can get the count
-        $this->getItems();
+        if ($this->_paginator == null) {
+            throw new Exception("Unable to perform query as the paginator has not been assigned to this adapter.");
+        }
 
-        return $this->_count;
+        if (is_null($this->_count[$this->_paginator->getCurrentPageNumber()]) {
+            // execute the soap request
+            $this->_paginator->getIterator();
+        }
+
+        return $this->_count[$this->_paginator->getCurrentPageNumber()];
+    }
+
+    public function setPaginator(SoftLayer_Paginator $paginator)
+    {
+        $this->_paginator = $paginator;
     }
 }

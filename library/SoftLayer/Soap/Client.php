@@ -49,6 +49,11 @@ class Softlayer_Soap_Client extends SoapClient
         $this->_headers[$headerName] = new SoapHeader('http://api.service.softlayer.com/soap/v3/', $headerName, $value);
     }
 
+    public function getHeader($headerName)
+    {
+        return $this->_headers[$headerName];
+    }
+
     public function addAuthenticationHeaders($username, $apiKey)
     {
         $header = new stdClass();
