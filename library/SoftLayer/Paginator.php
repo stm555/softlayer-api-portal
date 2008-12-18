@@ -21,7 +21,7 @@ class SoftLayer_Paginator extends Zend_Paginator
          * make multiple requests, we're not going to allow this right now. We'll just throw an error
          * when it's out of range.
          */
-        return $pageNumber;
+        return max(1, $pageNumber);
     }
 
     public function setCurrentPageNumber($pageNumber)
