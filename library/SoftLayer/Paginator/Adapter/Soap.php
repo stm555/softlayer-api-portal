@@ -84,7 +84,7 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
             throw new Exception("Unable to perform query as the paginator has not been assigned to this adapter.");
         }
 
-        if (is_null($this->_count[$this->_paginator->getCurrentPageNumber()]) {
+        if (is_null($this->_count[$this->_paginator->getCurrentPageNumber()])) {
             // execute the soap request
             $this->_paginator->getIterator();
         }
