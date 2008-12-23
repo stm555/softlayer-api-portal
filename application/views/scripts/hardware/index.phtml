@@ -6,16 +6,20 @@
                 <th>Public IP Address</th>
                 <th>Backend IP Address</th>
                 <th>Datacenter</th>
+                <th>Action</th>
             </tr>
         </thead>
 
         <tbody>
-            <?php foreach ($this->paginator as $item): ?>
+            <?php foreach ($this->paginator as $hardware): ?>
                 <tr>
-                    <td><?= $item->hostname; ?>.<?= $item->domain?></td>
-                    <td><?= $item->primaryIpAddress; ?></td>
-                    <td><?= $item->primaryBackendIpAddress; ?></td>
-                    <td><?= $item->datacenter->longName ?></td>
+                    <td><?= $hardware->hostname; ?>.<?= $hardware->domain?></td>
+                    <td><?= $hardware->primaryIpAddress; ?></td>
+                    <td><?= $hardware->primaryBackendIpAddress; ?></td>
+                    <td><?= $hardware->datacenter->longName ?></td>
+                    <td>
+                        <a href="<?= $this->url(array('controller' => 'hardware', 'action' => 'view', 'hardwareId' => $hardware->id));?>">View</a>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

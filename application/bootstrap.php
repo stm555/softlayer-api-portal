@@ -1,15 +1,15 @@
 <?php
 // application/bootstrap.php
-// 
+//
 // Step 1: APPLICATION CONSTANTS - Set the constants to use in this application.
-// These constants are accessible throughout the application, even in ini 
-// files. We optionally set APPLICATION_PATH here in case our entry point 
+// These constants are accessible throughout the application, even in ini
+// files. We optionally set APPLICATION_PATH here in case our entry point
 // isn't index.php (e.g., if required from our test suite or a script).
 defined('APPLICATION_PATH')
     or define('APPLICATION_PATH', dirname(__FILE__));
 
 defined('APPLICATION_ENVIRONMENT')
-    or define('APPLICATION_ENVIRONMENT', 'production');
+    or define('APPLICATION_ENVIRONMENT', 'development');
 
 // Step 2: FRONT CONTROLLER - Get the front controller.
 // The Zend_Front_Controller class implements the Singleton pattern, which is a
@@ -38,8 +38,8 @@ $frontController->setParam('env', APPLICATION_ENVIRONMENT);
 Zend_Layout::startMvc(APPLICATION_PATH . '/layouts/scripts');
 
 // VIEW SETUP - Initialize properties of the view object
-// The Zend_View component is used for rendering views. Here, we grab a "global" 
-// view instance from the layout object, and specify the doctype we wish to 
+// The Zend_View component is used for rendering views. Here, we grab a "global"
+// view instance from the layout object, and specify the doctype we wish to
 // use. In this case, XHTML1 Strict.
 $view = Zend_Layout::getMvcInstance()->getView();
 $view->doctype('XHTML1_STRICT');
@@ -51,7 +51,7 @@ $view->doctype('XHTML1_STRICT');
 // the values for the given section.  Here we will be using the section name
 // that corresponds to the APP's Environment
 $configuration = new Zend_Config_Ini(
-    APPLICATION_PATH . '/config/app.ini', 
+    APPLICATION_PATH . '/config/app.ini',
     APPLICATION_ENVIRONMENT
 );
 
@@ -62,10 +62,10 @@ $configuration = new Zend_Config_Ini(
 //
 
 // REGISTRY - setup the application registry
-// An application registry allows the application to store application 
-// necessary objects into a safe and consistent (non global) place for future 
-// retrieval.  This allows the application to ensure that regardless of what 
-// happends in the global scope, the registry will contain the objects it 
+// An application registry allows the application to store application
+// necessary objects into a safe and consistent (non global) place for future
+// retrieval.  This allows the application to ensure that regardless of what
+// happends in the global scope, the registry will contain the objects it
 // needs.
 $registry = Zend_Registry::getInstance();
 $registry->configuration = $configuration;
@@ -84,9 +84,11 @@ if ($softlayerApi->username != null) {
     SoftLayer_Soap_Client::setApiCredentials($softlayerApi->username, $softlayerApi->key);
 }
 
+Zend_Controller_Action_HelperBroker::addPrefix('SoftLayer_Controller_Action_Helper');
+
 
 // CLEANUP - remove items from global scope
-// This will clear all our local boostrap variables from the global scope of 
-// this script (and any scripts that called bootstrap).  This will enforce 
+// This will clear all our local boostrap variables from the global scope of
+// this script (and any scripts that called bootstrap).  This will enforce
 // object retrieval through the Applications's Registry
 unset($frontController, $view, $configuration, $registry);

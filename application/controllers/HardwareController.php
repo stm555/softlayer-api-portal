@@ -3,8 +3,7 @@ class HardwareController extends Zend_Controller_Action
 {
     public function indexAction()
     {
-
-        $soapClient = SoftLayer_Soap_Client::getSoapClient('SoftLayer_Account');
+        $soapClient = $this->_helper->soapClient('SoftLayer_Account');
 
         $objectMask = new SoftLayer_Soap_ObjectMask();
         $objectMask->hardware->datacenter;
@@ -14,5 +13,26 @@ class HardwareController extends Zend_Controller_Action
         $paginator->setItemCountPerPage(25);
 
         $this->view->paginator = $paginator;
+    }
+
+    public function viewAction()
+    {
+        $soapClient = $this->_helper->soapClient('SoftLayer_Hardware', $this->_getParam('hardwareId'));
+
+        $objectMask = new SoftLayer_Soap_ObjectMask();
+        $objectMask->components;
+        $objectMask->softwareComponents;
+        $objectMask->frontendNetworkComponents->networkVlan->primaryRouter;
+        $objectMask->backendNetworkComponents->networkVlan->primaryRouter;
+        $objectMask->serverRoom;
+        $objectMask->datacenter;
+        $objectMask->provisionDate;
+        $objectMask->lastTransaction;
+
+        $soapClient->setObjectMask($objectMask);
+
+        $hardware = $soapClient->getObject();
+
+        $this->view->hardware = $hardware;
     }
 }

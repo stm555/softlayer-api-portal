@@ -3,6 +3,8 @@
 class Softlayer_Soap_Client extends SoapClient
 {
 
+    const EXCEPTION_NO_API_KEY = 'EXCEPTION_NO_API_KEY';
+
     protected $_headers = array();
     protected $_serviceName;
 
@@ -15,6 +17,10 @@ class Softlayer_Soap_Client extends SoapClient
 
     public function __call($functionName, $arguments = null)
     {
+        if (self::$_user == null && self::$_key == null) {
+            throw new SoftLayer_Soap_Client_Exception(self::EXCEPTION_NO_API_KEY);
+        }
+
         return parent::__call($functionName, $arguments, null, $this->_headers, $this->_outputHeaders);
     }
 

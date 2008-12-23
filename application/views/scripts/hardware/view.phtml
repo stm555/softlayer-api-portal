@@ -1,0 +1,84 @@
+<h1><?= $this->hardware->hostname; ?>.<?= $this->hardware->domain ?></h1>
+<br />
+<ul style="padding-left: 2em;">
+    <li><b>Location</b>
+        <ul style="padding-left: 2em;">
+            <li>Server room: <?= $this->hardware->serverRoom->longName; ?></li>
+            <li>Datacenter: <?= $this->hardware->datacenter->longName; ?></li>
+        </ul>
+    </li>
+    <li><b>Provision Date</b>
+        <ul style="padding-left: 2em;">
+            <li><?= date_create($this->hardware->provisionDate)->format('Y/m/d H:i:s'); ?></li>
+        </ul>
+    </li>
+    <li><b>Last Transaction Date</b>
+        <ul style="padding-left: 2em;">
+            <li><?= date_create($this->hardware->lastTransaction->createDate)->format('Y/m/d H:i:s'); ?></li>
+        </ul>
+    </li>
+    <li><b>Hardware</b>
+        <ul style="padding-left: 2em;">
+            <?php foreach ($this->hardware->components AS $component):?>
+                <li>
+                    <?= $component->hardwareComponentModel->hardwareGenericComponentModel->hardwareComponentType->type; ?> -
+                    <?= $component->hardwareComponentModel->manufacturer; ?>
+                    <?= $component->hardwareComponentModel->name; ?>
+                    <?= $component->hardwareComponentModel->version; ?>
+                </li>
+            <?php endforeach;?>
+        </ul>
+    </li>
+
+    <li><b>Software</b>
+        <ul style="padding-left: 2em;">
+            <?php foreach ($this->hardware->softwareComponents AS $softwareComponent):?>
+                <li>
+                    <?= $softwareComponent->softwareLicense->softwareDescription->manufacturer; ?> -
+                    <?= $softwareComponent->softwareLicense->softwareDescription->name; ?> -
+                    <?= $softwareComponent->softwareLicense->softwareDescription->version; ?>
+                </li>
+            <?php endforeach;?>
+        </ul>
+    </li>
+
+    <?php if (count($this->hardware->frontendNetworkComponents) > 0):?>
+        <li><b>Frontend Network Components</b>
+            <ul style="padding-left: 2em;">
+                <?php foreach ($this->hardware->frontendNetworkComponents AS $networkComponent):?>
+                    <li>
+                        <b><?= $networkComponent->name; ?><?=$networkComponent->port?></b>
+                        <ul style="padding-left: 2em;">
+                            <li>Primary IP Address: <?= $networkComponent->primaryIpAddress; ?></li>
+                            <li>MAC Address: <?= $networkComponent->macAddress; ?></li>
+                        </ul>
+                    </li>
+                <?php endforeach;?>
+            </ul>
+        </li>
+    <?php endif;?>
+
+    <?php if (count($this->hardware->backendNetworkComponents) > 0):?>
+        <li><b>Backend Network Components</b>
+            <ul style="padding-left: 2em;">
+                <?php foreach ($this->hardware->backendNetworkComponents AS $networkComponent):?>
+                    <li>
+                        <b><?= $networkComponent->name; ?><?=$networkComponent->port?></b>
+                        <ul style="padding-left: 2em;">
+                            <?php /* some eth0 devices double as the remote management device */ ?>
+                            <?php if ($networkComponent->primaryIpAddress != null): ?>
+                                <li>Primary IP Address: <?= $networkComponent->primaryIpAddress; ?></li>
+                                <li>MAC Address: <?= $networkComponent->macAddress; ?></li>
+                            <?php endif;?>
+
+                            <?php if ($networkComponent->ipmiIpAddress != null): ?>
+                                <li>Remote Management IP Address: <?= $networkComponent->ipmiIpAddress; ?></li>
+                                <li>Remote Management MAC Address: <?= $networkComponent->ipmiMacAddress; ?></li>
+                            <?php endif?>
+                        </ul>
+                    </li>
+                <?php endforeach;?>
+            </ul>
+        </li>
+    <?php endif;?>
+</ul>
