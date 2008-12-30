@@ -54,7 +54,7 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
      */
     public function getItems($offset, $itemCountPerPage)
     {
-        if ($this->_itemCache[$offset.'/'.$itemCountPerPage] == null) {
+        if ($this->_itemCache[$offset . '/' . $itemCountPerPage] == null) {
             $this->_soapClient->setResultLimitHeader($itemCountPerPage, $offset);
 
             if ($this->_objectMask != null) {
@@ -65,12 +65,12 @@ class SoftLayer_Paginator_Adapter_Soap implements Zend_Paginator_Adapter_Interfa
                 $this->_soapClient->setObjectFilter($this->_objectFilter);
             }
 
-            $this->_itemCache[$offset.'/'.$itemCountPerPage] = $this->_soapClient->{$this->_soapMethod}();
+            $this->_itemCache[$offset . '/' . $itemCountPerPage] = $this->_soapClient->{$this->_soapMethod}();
 
             $this->_count[$this->_paginator->getCurrentPageNumber()] = $this->_soapClient->getOutputHeader('totalItems');
         }
 
-        return $this->_itemCache[$offset.'/'.$itemCountPerPage];
+        return $this->_itemCache[$offset . '/' . $itemCountPerPage];
     }
 
     /**

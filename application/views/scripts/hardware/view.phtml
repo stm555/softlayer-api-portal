@@ -1,30 +1,51 @@
 <h1><?= $this->hardware->hostname; ?>.<?= $this->hardware->domain ?></h1>
 <br />
 <ul style="padding-left: 2em;">
+
     <li><b>Location</b>
         <ul style="padding-left: 2em;">
             <li>Server room: <?= $this->hardware->serverRoom->longName; ?></li>
             <li>Datacenter: <?= $this->hardware->datacenter->longName; ?></li>
         </ul>
     </li>
+
     <li><b>Provision Date</b>
         <ul style="padding-left: 2em;">
-            <li><?= date_create($this->hardware->provisionDate)->format('Y/m/d H:i:s'); ?></li>
+            <li><?= $this->timestamp($this->hardware->provisionDate); ?></li>
         </ul>
     </li>
+
     <li><b>Last Transaction Date</b>
         <ul style="padding-left: 2em;">
-            <li><?= date_create($this->hardware->lastTransaction->createDate)->format('Y/m/d H:i:s'); ?></li>
+            <li><?= $this->timestamp($this->hardware->lastTransaction->createDate); ?></li>
         </ul>
     </li>
+
     <li><b>Hardware</b>
         <ul style="padding-left: 2em;">
-            <?php foreach ($this->hardware->components AS $component):?>
+            <?php $componentTypes = $this->hardware->components->hardwareComponentModel->hardwareGenericComponentModel->hardwareComponentType->type->unique();?>
+            <?php $componentTypes->natcasesort();?>
+
+            <?php foreach ($componentTypes AS $componentType):?>
+                <?php foreach ($this->hardware->components->getWhere('hardwareComponentModel->hardwareGenericComponentModel->hardwareComponentType->type', $componentType) AS $component):?>
+                    <li>
+                        <?= $component->hardwareComponentModel->hardwareGenericComponentModel->hardwareComponentType->type; ?> -
+                        <?= $component->hardwareComponentModel->manufacturer; ?>
+                        <?= $component->hardwareComponentModel->name; ?>
+                        <?= $component->hardwareComponentModel->version; ?>
+                    </li>
+                <?php endforeach;?>
+            <?php endforeach;?>
+        </ul>
+    </li>
+
+    <li><b>Operating System</b>
+        <ul style="padding-left: 2em;">
+            <?php foreach ($this->hardware->softwareComponents->getWhere('softwareLicense->softwareDescription->operatingSystem', 1) AS $softwareComponent):?>
                 <li>
-                    <?= $component->hardwareComponentModel->hardwareGenericComponentModel->hardwareComponentType->type; ?> -
-                    <?= $component->hardwareComponentModel->manufacturer; ?>
-                    <?= $component->hardwareComponentModel->name; ?>
-                    <?= $component->hardwareComponentModel->version; ?>
+                    <?= $softwareComponent->softwareLicense->softwareDescription->manufacturer; ?> -
+                    <?= $softwareComponent->softwareLicense->softwareDescription->name; ?> -
+                    <?= $softwareComponent->softwareLicense->softwareDescription->version; ?>
                 </li>
             <?php endforeach;?>
         </ul>
@@ -32,7 +53,7 @@
 
     <li><b>Software</b>
         <ul style="padding-left: 2em;">
-            <?php foreach ($this->hardware->softwareComponents AS $softwareComponent):?>
+            <?php foreach ($this->hardware->softwareComponents->getWhereNot('softwareLicense->softwareDescription->operatingSystem', 1) AS $softwareComponent):?>
                 <li>
                     <?= $softwareComponent->softwareLicense->softwareDescription->manufacturer; ?> -
                     <?= $softwareComponent->softwareLicense->softwareDescription->name; ?> -

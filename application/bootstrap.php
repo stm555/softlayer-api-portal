@@ -43,6 +43,7 @@ Zend_Layout::startMvc(APPLICATION_PATH . '/layouts/scripts');
 // use. In this case, XHTML1 Strict.
 $view = Zend_Layout::getMvcInstance()->getView();
 $view->doctype('XHTML1_STRICT');
+$view->addHelperPath('SoftLayer/View/Helper', 'SoftLayer_View_Helper');
 
 // application/bootstrap.php
 //
@@ -92,3 +93,15 @@ Zend_Controller_Action_HelperBroker::addPrefix('SoftLayer_Controller_Action_Help
 // this script (and any scripts that called bootstrap).  This will enforce
 // object retrieval through the Applications's Registry
 unset($frontController, $view, $configuration, $registry);
+
+// not sure where else to define this right now, but it's a favorite "dev tool"
+function print_pre($data, $title = '', $return = false)
+{
+    $print = '<b>' . $title . '</b><br /><div style="white-space: pre; border: 1px solid black; padding: 2px; font-family: monospace;">' . print_r($data, true) . '</div>';
+
+    if ($return === true) {
+        return $print;
+    }
+
+    echo $print;
+}

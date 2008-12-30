@@ -15,13 +15,28 @@ class Softlayer_Soap_Client extends SoapClient
 
     protected $_outputHeaders = array();
 
+    private static $_processedObjects = array();
+
     public function __call($functionName, $arguments = null)
     {
         if (self::$_user == null && self::$_key == null) {
             throw new SoftLayer_Soap_Client_Exception(self::EXCEPTION_NO_API_KEY);
         }
 
-        return parent::__call($functionName, $arguments, null, $this->_headers, $this->_outputHeaders);
+        self::$_processedObjects = array();
+
+        try {
+            $result = parent::__call($functionName, $arguments, null, $this->_headers, $this->_outputHeaders);
+        } catch (Exception $e) {
+            if (property_exists($e, 'detail')) {
+                self::_encapsulateArrays($e->detail);
+            }
+            throw $e;
+        }
+
+        self::_encapsulateArrays($result);
+
+        return $result;
     }
 
     public static function setApiCredentials($apiUser, $apiKey)
@@ -98,6 +113,33 @@ class Softlayer_Soap_Client extends SoapClient
         }
 
         return $this->_outputHeaders[$headerName];
+    }
+
+    private static function _encapsulateArrays(&$item)
+    {
+        if (is_array($item)) {
+            $childCount = count($item);
+            reset($item);
+
+            for ($i = 0; $i < $childCount; $i++) {
+                $child = current($item);
+                next($item);
+
+                if (is_array($child) || (is_object($child) && !($child instanceof ArrayObject))) {
+                    self::_encapsulateArrays($child);
+                }
+            }
+            $item = new SoftLayer_Collection($item);
+
+        } else if (is_object($item) && !($item instanceof ArrayObject)) {
+            if (isset(self::$_processedObjects[spl_object_hash($item)])) return; // already processed this object
+            self::$_processedObjects[spl_object_hash($item)] = true;
+            foreach ($item AS $property => &$value) {
+                if (is_array($value) || (is_object($value) && !($value instanceof ArrayObject))) {
+                    self::_encapsulateArrays($value);
+                }
+            }
+        }
     }
 
 }
