@@ -2,19 +2,39 @@
 class SoftLayer_Collection extends ArrayObject
 {
     protected $_keyCache;
+    
+    protected function _savePosition()
+    {
+        // get the current position
+        $startKey = &key($this);
+        reset($this);
+    }
+    
+    protected function _restorePosition()
+    {
+        reset($this);
+        // reset array position
+        while (key($this) !== $startKey) {
+            next($this);
+        }
+    }
 
     public function __get($name)
     {
         if (is_null($this->_keyCache[$name])) {
-            // get the current position
-            $startKey = &key($this);
-            reset($this);
-
             $totalItems = $this->count();
+            
+            $this->_savePosition();
+            
+            $collectionType = get_class($this);
 
-            $newCollection = new SoftLayer_Collection();
+            $newCollection = new $collectionType();
 
             for ($i = 0; $i < $totalItems; $i++) {
+                if ($this instanceof SoftLayer_Collection_Orm && property_exists(current($this), $name) === false) {                    
+                    continue;    
+                }                
+                
                 $value = &current($this)->{$name};
                 next($this);
 
@@ -23,11 +43,7 @@ class SoftLayer_Collection extends ArrayObject
                 $newCollection[] = $value;
             }
 
-            reset($this);
-            // reset array position
-            while (key($this) !== $startKey) {
-                next($this);
-            }
+            $this->_restorePosition();
 
             $this->_keyCache[$name] = $newCollection;
         }

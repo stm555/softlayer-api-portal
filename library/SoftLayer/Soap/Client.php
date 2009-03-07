@@ -52,9 +52,9 @@ class Softlayer_Soap_Client extends SoapClient
 
     public static function getSoapClient($serviceName, $id = null)
     {
-        $soapClient = new SoftLayer_Soap_Client(self::$_endpoint.$serviceName.'?wsdl');
+        $soapClient = new SoftLayer_Soap_Client(self::$_endpoint . $serviceName . '?wsdl');
         $soapClient->addAuthenticationHeaders(self::$_user, self::$_key);
-        $soapClient->_serviceName = $serviceName;
+        $soapClient->setServiceName($serviceName);
 
         if ($id != null) {
             $initParameters = new stdClass();
@@ -95,6 +95,11 @@ class Softlayer_Soap_Client extends SoapClient
     public function setObjectFilter($filter)
     {
         $this->addHeader($this->_serviceName.'ObjectFilter', $filter);
+    }
+
+    public function setServiceName($serviceName)
+    {
+        $this->_serviceName = $serviceName;
     }
 
     public function setResultLimitHeader($limit, $offset = 0)

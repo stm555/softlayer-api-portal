@@ -77,6 +77,9 @@ if ($configuration->api->username != null) {
 
 SoftLayer_Soap_Client::setEndpoint($configuration->api->endpoint);
 
+$registry->db = Zend_Db::factory($configuration->database);
+Zend_Db_Table_Abstract::setDefaultAdapter($registry->db);
+
 Zend_Session::start();
 
 $softlayerApi = new Zend_Session_Namespace('softlayerApi');
